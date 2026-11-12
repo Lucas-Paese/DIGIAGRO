@@ -71,8 +71,12 @@ async function api(metodo, caminho, corpo) {
   let resp;
   try { resp = await fetch('/api/' + caminho, opts); }
   catch { statusBanco(false); throw new Error('Não foi possível falar com o servidor. Ele está rodando?'); }
+  const dados = await resp.json().catch(() => null);
+  if (dados === null) {   // resposta que não é JSON = não existe uma API do DigiAgro nesse endereço
+    statusBanco(false);
+    throw new Error(`A API do DigiAgro não respondeu neste endereço (erro ${resp.status}). O servidor (server.py) precisa estar rodando.`);
+  }
   statusBanco(true);
-  const dados = await resp.json().catch(() => ({}));
   if (resp.status === 401 && token) { encerrarSessao(); throw new Error(dados.erro || 'Sessão expirada. Entre novamente.'); }
   if (!resp.ok) throw new Error(dados.erro || 'Erro inesperado.');
   return dados;

@@ -75,6 +75,21 @@ git push -u origin main
 - O Git sincroniza quando você faz `push`/`pull`, não em tempo real. Para vários computadores usando
   o mesmo banco ao mesmo tempo, o sistema precisa ficar hospedado em um servidor na internet.
 
+## Vercel: o que funciona e o que não funciona
+
+O DigiAgro tem duas partes: o **visual** (pasta `public/`, arquivos estáticos) e o **servidor com banco**
+(`server.py` + SQLite). O Vercel só hospeda a primeira:
+
+- O Vercel **não roda** o `server.py` (ele não mantém um servidor ligado) e **não guarda** o arquivo
+  `digiagro.db` (o disco lá é temporário). Por isso, publicado só no Vercel, a tela aparece, mas
+  login, cadastro e dados **não funcionam** (a tela mostra "A API do DigiAgro não respondeu").
+- O `vercel.json` desta pasta manda o Vercel publicar **somente** a pasta `public/`. Assim o banco,
+  os backups e o `server.py` nunca ficam acessíveis pela internet.
+- Se o CSS não carregar: confira em *Project Settings → Build and Development Settings* se
+  **Output Directory** está `public` e, se o projeto estiver dentro de uma subpasta do repositório,
+  se **Root Directory** aponta para ela.
+- Nunca suba o `digiagro.db` nem `dados/digiagro.sql` para um lugar público.
+
 ## Banco de dados
 
 | Tabela | O que guarda |
